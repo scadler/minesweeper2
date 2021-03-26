@@ -119,60 +119,14 @@ function chainEmptyTileReveals(i,j){
         ii++
     }
     if(unchecked.length > 0){
+        setTimeout(() => {
+        chainEmptyTileReveals(unchecked[0]%10,Math.floor(unchecked[0]/10))
         console.log(unchecked.length)
         checked.push(unchecked[0])
         unchecked.shift()
         console.log("call")
+        },)
     }
     console.log(unchecked)
     console.log(checked)
 }
-
-    // var ii = 0;
-    // while(ii<8){
-    //     x = neighborIndexMath[ii][0];
-    //     y = neighborIndexMath[ii][1];
-    //     if((i+x)>=0 && (j+y)>=0 && (i+x)<=9 && (j+y)<=9){
-    //         let image = document.getElementById(`${imageList[tile[i+x][j+y]]}`)
-    //         ctx.drawImage(image, (j+y)*50, (i+x)*50, 50, 50);
-    //         if(tile[i+x][j+y] === "0" && emptyTileUnchecked.includes((i+x)+((j+y)*10)) !== true && emptyTileChecked.includes((i+x)+((j+y)*10)) !== true){
-    //             emptyTileUnchecked.push((i+x)+((j+y)*10));
-    //         }
-    //         else if(tile[i+x][j+y] === "0" && emptyTileUnchecked.includes((i+x)+((j+y)*10)) === true && emptyTileChecked.includes((i+x)+((j+y)*10)) !== true){
-    //             emptyTileChecked.push((i+x)+((j+y)*10));
-    //         }
-        
-        
-        // if(emptyTileUnchecked.length > 0 && emptyTileUnchecked.length === c && ii === 8){
-        //     console.log("ierbiew")
-        // chainEmptyTileReveals(emptyTileUnchecked[0]%10,Math.floor(emptyTileUnchecked[0]/10),emptyTileUnchecked.length)
-        // emptyTileChecked.push(emptyTileUnchecked[0]);
-        // emptyTileUnchecked.shift();
-        //         console.log(emptyTileUnchecked)
-        // console.log(emptyTileChecked)
-        // emptyTileUnchecked.forEach(chainEmptyTileReveals)
-    // }
-    // ii++
-    // }
-    // if(ii === 8 && emptyTileUnchecked.length > 0 && test[0] === true){
-    //     test[0] = false
-    // var iii = 0
-    // while(iii < emptyTileUnchecked.length){
-    //     if(emptyTileChecked.includes(emptyTileUnchecked[iii]) !== true){
-    //     setTimeout(() => {
-    //         chainEmptyTileReveals(emptyTileUnchecked[iii]%10,Math.floor(emptyTileUnchecked[iii]/10))
-    //     },10)
-    //     }
-    //     iii++
-    // }
-        // callChainEmptyTileReveals()
-// }
-//     console.log(emptyTileUnchecked)
-//     console.log(emptyTileChecked)
-
-// }
-// function callChainEmptyTileReveals(){
-
-    
-
-// }
