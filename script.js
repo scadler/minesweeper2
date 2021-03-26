@@ -9,7 +9,10 @@ var tile = [];
     [ [1] [X] [X] ]
     tile[0][2] = 1, tile[1][1] = 3
      _ = null, X = mine, nums 0-8 = 0-8, f = flagged mine, n = flagged number
-*/ 
+*/
+var test = [true];
+var checked = [];
+var unchecked = [];
 var imageList = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight"]  
 var neighborIndexMath = [[-1,-1], [0,-1], [1,-1], [-1,0], [1,0], [-1,1], [0,1], [1,1]];
 var rows = 10;
@@ -32,23 +35,25 @@ function drawBoard(){
     }
 };
 drawBoard()
-function generateArray(){
+function generateArray(avoidX,avoidY){
     for ( var i = 0; i<rows; i++){
         tile[i] = [];
         for ( var j = 0; j<cols; j++){
             tile[i][j] = "_";
         }
     }
-    generateBombs();
+    generateBombs(avoidX,avoidY);
 };
-function generateBombs(){
+function generateBombs(avoidX,avoidY){
     var i = 0;
-    while(i<20){
+    while(i<16){
         var x = Math.floor(Math.random()*10);
         var y = Math.floor(Math.random()*10);
-        if(tile[x][y]!= "X"){
-        tile[x][y] = "X";
-        i++;
+        if(tile[x][y]!= "X" && x !== avoidX && y !== avoidY){
+            /*this if statement ensures that mines are not placed where mines
+            already are or where the player first clicked*/
+            tile[x][y] = "X";
+            i++;
         }
     }
     generateTiles()
@@ -68,23 +73,106 @@ function generateTiles(){
                     }
                     ii++;
                 }
-            tile[i][j] = `${neighbors}`
+            tile[i][j] = `${neighbors}`;
             }
         }
     }
-    console.log(tile)
+    console.log(tile);
 }
-generateArray();
+// generateArray();
 
 function tileClicked(row,col){
-    var i = Math.floor(col/50)
-    var j = Math.floor(row/50)
+    var i = Math.floor(col/50);
+    var j = Math.floor(row/50);
     if(i>=0 && j>=0 && i<=9 && j<=9){
+        if(tile.length !== 10){
+            generateArray(i,j);
+        }
         let image = (imageList[tile[i][j]]) ? document.getElementById(`${imageList[tile[i][j]]}`): document.getElementById("mine");
-        console.log(tile[i][j]+" "+col+" "+row+" "+i+" "+j+" "+imageList[tile[i][j]])
-            ctx.drawImage(image, j*50, i*50, 50, 50);
+        console.log(tile[i][j]+" "+col+" "+row+" "+i+" "+j+" "+imageList[tile[i][j]]);
+        ctx.drawImage(image, j*50, i*50, 50, 50);
+        if(tile[i][j] === "0"){
+            chainEmptyTileReveals(i,j)
+        }
         }
     }
 document.getElementById("canvas").addEventListener('click', (event) => {
-    tileClicked(event.pageX-15,event.pageY-15)
+    tileClicked(event.pageX-15,event.pageY-15);
 });
+function chainEmptyTileReveals(i,j){
+    var ii = 0
+    while(ii < 8){
+        x = neighborIndexMath[ii][0];
+        y = neighborIndexMath[ii][1];
+        if((i+x)>=0 && (j+y)>=0 && (i+x)<=9 && (j+y)<=9){
+            let image = document.getElementById(`${imageList[tile[i+x][j+y]]}`)
+            ctx.drawImage(image, (j+y)*50, (i+x)*50, 50, 50);
+            if(tile[i+x][j+y] === "0"){
+                if(unchecked.includes((i+x)+((j+y)*10)) === false && checked.includes((i+x)+((j+y)*10)) === false){
+                    unchecked.push((i+x)+((j+y)*10))
+                }
+                else if(checked.includes((i+x)+((j+y)*10)) === false){
+                    checked.push((i+x)+((j+y)*10))
+                }
+            }
+        }
+        ii++
+    }
+    if(unchecked.length > 0){
+        console.log(unchecked.length)
+        checked.push(unchecked[0])
+        unchecked.shift()
+        console.log("call")
+    }
+    console.log(unchecked)
+    console.log(checked)
+}
+
+    // var ii = 0;
+    // while(ii<8){
+    //     x = neighborIndexMath[ii][0];
+    //     y = neighborIndexMath[ii][1];
+    //     if((i+x)>=0 && (j+y)>=0 && (i+x)<=9 && (j+y)<=9){
+    //         let image = document.getElementById(`${imageList[tile[i+x][j+y]]}`)
+    //         ctx.drawImage(image, (j+y)*50, (i+x)*50, 50, 50);
+    //         if(tile[i+x][j+y] === "0" && emptyTileUnchecked.includes((i+x)+((j+y)*10)) !== true && emptyTileChecked.includes((i+x)+((j+y)*10)) !== true){
+    //             emptyTileUnchecked.push((i+x)+((j+y)*10));
+    //         }
+    //         else if(tile[i+x][j+y] === "0" && emptyTileUnchecked.includes((i+x)+((j+y)*10)) === true && emptyTileChecked.includes((i+x)+((j+y)*10)) !== true){
+    //             emptyTileChecked.push((i+x)+((j+y)*10));
+    //         }
+        
+        
+        // if(emptyTileUnchecked.length > 0 && emptyTileUnchecked.length === c && ii === 8){
+        //     console.log("ierbiew")
+        // chainEmptyTileReveals(emptyTileUnchecked[0]%10,Math.floor(emptyTileUnchecked[0]/10),emptyTileUnchecked.length)
+        // emptyTileChecked.push(emptyTileUnchecked[0]);
+        // emptyTileUnchecked.shift();
+        //         console.log(emptyTileUnchecked)
+        // console.log(emptyTileChecked)
+        // emptyTileUnchecked.forEach(chainEmptyTileReveals)
+    // }
+    // ii++
+    // }
+    // if(ii === 8 && emptyTileUnchecked.length > 0 && test[0] === true){
+    //     test[0] = false
+    // var iii = 0
+    // while(iii < emptyTileUnchecked.length){
+    //     if(emptyTileChecked.includes(emptyTileUnchecked[iii]) !== true){
+    //     setTimeout(() => {
+    //         chainEmptyTileReveals(emptyTileUnchecked[iii]%10,Math.floor(emptyTileUnchecked[iii]/10))
+    //     },10)
+    //     }
+    //     iii++
+    // }
+        // callChainEmptyTileReveals()
+// }
+//     console.log(emptyTileUnchecked)
+//     console.log(emptyTileChecked)
+
+// }
+// function callChainEmptyTileReveals(){
+
+    
+
+// }
