@@ -10,9 +10,9 @@ var tile = [];
     tile[0][2] = 1, tile[1][1] = 3
      _ = null, X = mine, nums 0-8 = 0-8, f = flagged mine, n = flagged number
 */
-var test = [true];
 var checked = [];
 var unchecked = [];
+var flagList = [];
 var imageList = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight"]  
 var neighborIndexMath = [[-1,-1], [0,-1], [1,-1], [-1,0], [1,0], [-1,1], [0,1], [1,1]];
 var rows = 10;
@@ -79,8 +79,6 @@ function generateTiles(){
     }
     console.log(tile);
 }
-// generateArray();
-
 function tileClicked(row,col){
     var i = Math.floor(col/50);
     var j = Math.floor(row/50);
@@ -92,27 +90,56 @@ function tileClicked(row,col){
         console.log(tile[i][j]+" "+col+" "+row+" "+i+" "+j+" "+imageList[tile[i][j]]);
         ctx.drawImage(image, j*50, i*50, 50, 50);
         if(tile[i][j] === "0"){
-            chainEmptyTileReveals(i,j)
+            chainEmptyTileReveals(i,j);
         }
         }
     }
-document.getElementById("canvas").addEventListener('click', (event) => {
-    tileClicked(event.pageX-15,event.pageY-15);
+$("#canvas").mousedown(function(e){
+    if(e.which === 1) {
+        tileClicked(e.pageX-15,e.pageY-15);
+    }
+    if(e.which === 3) {
+        e.preventDefault();
+        placeFlag(e.pageX-15,e.pageY-15);
+    }
+});
+$("#canvas").bind("contextmenu", function(e) {
+    return false;
+});
+function placeFlag(row,col){
+    var i = Math.floor(col/50);
+    var j = Math.floor(row/50);
+    let image = document.getElementById("flag");
+    if(flagList.includes(i+(j*10)) === false){
+    flagList.push(i+(j*10))
+    console.log(flagList)
+    ctx.drawImage(image, (j)*50, (i)*50, 50, 50);
+    }
+}
+document.getElementById("canvas").addEventListener('mousedown', (e) => {
+        /* Right mouse button was clicked! */
+        
+    // if(e.which === 1) {
+    //     tileClicked(e.pageX-15,e.pageY-15);
+    // }
+    
+    
 });
 function chainEmptyTileReveals(i,j){
-    var ii = 0
+    var ii = 0;
     while(ii < 8){
         x = neighborIndexMath[ii][0];
         y = neighborIndexMath[ii][1];
         if((i+x)>=0 && (j+y)>=0 && (i+x)<=9 && (j+y)<=9){
-            let image = document.getElementById(`${imageList[tile[i+x][j+y]]}`)
+            let image = document.getElementById(`${imageList[tile[i+x][j+y]]}`);
             ctx.drawImage(image, (j+y)*50, (i+x)*50, 50, 50);
             if(tile[i+x][j+y] === "0"){
-                if(unchecked.includes((i+x)+((j+y)*10)) === false && checked.includes((i+x)+((j+y)*10)) === false){
-                    unchecked.push((i+x)+((j+y)*10))
+                if(unchecked.includes((i+x)+((j+y)*10)) === false && checked.includes((i+x)+((j+y)*10)) === false && flagList.includes((i+x)+((j+y)*10)) === false){
+                    console.log((i+x)+((j+y)*10))
+                    unchecked.push((i+x)+((j+y)*10));
                 }
                 else if(checked.includes((i+x)+((j+y)*10)) === false){
-                    checked.push((i+x)+((j+y)*10))
+                    checked.push((i+x)+((j+y)*10));
                 }
             }
         }
@@ -120,13 +147,9 @@ function chainEmptyTileReveals(i,j){
     }
     if(unchecked.length > 0){
         setTimeout(() => {
-        chainEmptyTileReveals(unchecked[0]%10,Math.floor(unchecked[0]/10))
-        console.log(unchecked.length)
-        checked.push(unchecked[0])
-        unchecked.shift()
-        console.log("call")
+            chainEmptyTileReveals(unchecked[0]%10,Math.floor(unchecked[0]/10));
+            checked.push(unchecked[0]);
+            unchecked.shift();
         },)
     }
-    console.log(unchecked)
-    console.log(checked)
 }
