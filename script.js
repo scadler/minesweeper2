@@ -45,13 +45,21 @@ function generateArray(avoidX,avoidY){
     generateBombs(avoidX,avoidY);
 };
 function generateBombs(avoidX,avoidY){
+    var c = 0;
     var i = 0;
+    var avoidNeighborX = [];
+    var avoidNeighborY = [];
+    while(c < 8){
+        avoidNeighborX.push(avoidX+neighborIndexMath[c][0])
+        avoidNeighborY.push(avoidY+neighborIndexMath[c][1])
+        c++
+    }
     while(i<16){
         var x = Math.floor(Math.random()*10);
         var y = Math.floor(Math.random()*10);
-        if(tile[x][y]!= "X" && x !== avoidX && y !== avoidY){
+        if(tile[x][y]!= "X" && (avoidNeighborX.includes(x) === false || avoidNeighborY.includes(y) === false)){
             /*this if statement ensures that mines are not placed where mines
-            already are or where the player first clicked*/
+            already are or near where the player first clicked*/
             tile[x][y] = "X";
             i++;
         }
@@ -116,15 +124,6 @@ function placeFlag(row,col){
     ctx.drawImage(image, (j)*50, (i)*50, 50, 50);
     }
 }
-document.getElementById("canvas").addEventListener('mousedown', (e) => {
-        /* Right mouse button was clicked! */
-        
-    // if(e.which === 1) {
-    //     tileClicked(e.pageX-15,e.pageY-15);
-    // }
-    
-    
-});
 function chainEmptyTileReveals(i,j){
     var ii = 0;
     while(ii < 8){
