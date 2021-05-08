@@ -91,15 +91,21 @@ function tileClicked(row,col){
     var i = Math.floor(col/50);
     var j = Math.floor(row/50);
     if(i>=0 && j>=0 && i<=9 && j<=9){
-        if(tile.length !== 10){
-            generateArray(i,j);
+        if(flagList.includes(i+(j*10))){
+            //tile clicked was a flag
+            console.log(flagList.indexOf(i+(j*10)))
         }
-        let image = (imageList[tile[i][j]]) ? document.getElementById(`${imageList[tile[i][j]]}`): document.getElementById("mine");
-        console.log(tile[i][j]+" "+col+" "+row+" "+i+" "+j+" "+imageList[tile[i][j]]);
-        ctx.drawImage(image, j*50, i*50, 50, 50);
-        if(tile[i][j] === "0"){
-            chainEmptyTileReveals(i,j);
-        }
+        else{
+            if(tile.length !== 10){
+                generateArray(i,j);
+            }
+            let image = (imageList[tile[i][j]]) ? document.getElementById(`${imageList[tile[i][j]]}`): document.getElementById("mine");
+            console.log(tile[i][j]+" "+col+" "+row+" "+i+" "+j+" "+imageList[tile[i][j]]);
+            ctx.drawImage(image, j*50, i*50, 50, 50);
+            if(tile[i][j] === "0"){
+                chainEmptyTileReveals(i,j);
+            }
+            }
         }
     }
 $("#canvas").mousedown(function(e){
