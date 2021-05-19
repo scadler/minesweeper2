@@ -10,6 +10,7 @@ var tile = [];
     tile[0][2] = 1, tile[1][1] = 3
      _ = null, X = mine, nums 0-8 = 0-8, f = flagged mine, n = flagged number
 */
+var revealedTileList = [];
 var checked = [];
 var unchecked = [];
 var flagList = [];
@@ -38,10 +39,13 @@ drawBoard()
 function generateArray(avoidX,avoidY){
     for ( var i = 0; i<rows; i++){
         tile[i] = [];
+        revealedTileList[i] = [];
         for ( var j = 0; j<cols; j++){
             tile[i][j] = "_";
+            revealedTileList[i][j] = " ";
         }
     }
+    console.log(revealedTileList)
     generateBombs(avoidX,avoidY);
 };
 function generateBombs(avoidX,avoidY){
@@ -94,9 +98,18 @@ function tileClicked(row,col){
         if(flagList.includes(i+(j*10))){
             //tile clicked was a flag
             flagList.splice(flagList.indexOf(i+(j*10)),1)
-            let image = document.getElementById(`zero`)
-            // console.log(tile[i][j]+" "+col+" "+row+" "+i+" "+j+" "+imageList[tile[i][j]]);
-            ctx.drawImage(image, j*50, i*50, 50, 50);
+            var x = j*50;
+            var y = i*50;
+            ctx.beginPath();
+            ctx.moveTo(x,y);
+            ctx.lineTo(x+50,y);
+            ctx.lineTo(x,y+50);
+            ctx.closePath();
+            ctx.fillStyle = "#FBFAF9";
+            ctx.fill();
+            ctx.fillStyle = "#BDBDBD";
+            ctx.fillRect(x+5,y+5,40,40);
+            //redraws a blank tile over the previously drawn image of flag
         }
         else{
             if(tile.length !== 10){
@@ -105,6 +118,7 @@ function tileClicked(row,col){
             let image = (imageList[tile[i][j]]) ? document.getElementById(`${imageList[tile[i][j]]}`): document.getElementById("mine");
             console.log(tile[i][j]+" "+col+" "+row+" "+i+" "+j+" "+imageList[tile[i][j]]);
             ctx.drawImage(image, j*50, i*50, 50, 50);
+            revealedTileList[i][j] = "X"
             if(tile[i][j] === "0"){
                 chainEmptyTileReveals(i,j);
             }
@@ -114,6 +128,7 @@ function tileClicked(row,col){
 $("#canvas").mousedown(function(e){
     if(e.which === 1) {
         tileClicked(e.pageX-15,e.pageY-15);
+        // console.log($(this).attr("id"));
     }
     if(e.which === 3) {
         e.preventDefault();
@@ -127,10 +142,11 @@ function placeFlag(row,col){
     var i = Math.floor(col/50);
     var j = Math.floor(row/50);
     let image = document.getElementById("flag");
-    if(flagList.includes(i+(j*10)) === false){
-    flagList.push(i+(j*10))
-    console.log(flagList)
-    ctx.drawImage(image, (j)*50, (i)*50, 50, 50);
+    if(flagList.includes(i+(j*10)) === false && revealedTileList[i][j] !== "X"){
+        //flag has not been placed on this tile and it is unrevealed
+        flagList.push(i+(j*10))
+        console.log(flagList)
+        ctx.drawImage(image, (j)*50, (i)*50, 50, 50);
     }
 }
 function chainEmptyTileReveals(i,j){
@@ -138,11 +154,12 @@ function chainEmptyTileReveals(i,j){
     while(ii < 8){
         x = neighborIndexMath[ii][0];
         y = neighborIndexMath[ii][1];
-        if((i+x)>=0 && (j+y)>=0 && (i+x)<=9 && (j+y)<=9){
+        if((i+x)>=0 && (j+y)>=0 && (i+x)<=9 && (j+y)<=9 && flagList.includes((i+x)+((j+y)*10)) === false){
             let image = document.getElementById(`${imageList[tile[i+x][j+y]]}`);
             ctx.drawImage(image, (j+y)*50, (i+x)*50, 50, 50);
+            revealedTileList[i+x][j+y] = "X";
             if(tile[i+x][j+y] === "0"){
-                if(unchecked.includes((i+x)+((j+y)*10)) === false && checked.includes((i+x)+((j+y)*10)) === false && flagList.includes((i+x)+((j+y)*10)) === false){
+                if(unchecked.includes((i+x)+((j+y)*10)) === false && checked.includes((i+x)+((j+y)*10)) === false){
                     console.log((i+x)+((j+y)*10))
                     unchecked.push((i+x)+((j+y)*10));
                 }
@@ -160,4 +177,5 @@ function chainEmptyTileReveals(i,j){
             unchecked.shift();
         },)
     }
+    console.log(revealedTileList)
 }

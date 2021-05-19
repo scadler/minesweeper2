@@ -8,4 +8,5 @@ html{
     border-left: 5px solid #949494;
     border-bottom: 5px solid #FBFAF9;
     border-right: 5px solid #FBFAF9;
+    z-index: -100;
 }
