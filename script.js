@@ -93,7 +93,10 @@ function tileClicked(row,col){
     if(i>=0 && j>=0 && i<=9 && j<=9){
         if(flagList.includes(i+(j*10))){
             //tile clicked was a flag
-            console.log(flagList.indexOf(i+(j*10)))
+            flagList.splice(flagList.indexOf(i+(j*10)),1)
+            let image = document.getElementById(`zero`)
+            // console.log(tile[i][j]+" "+col+" "+row+" "+i+" "+j+" "+imageList[tile[i][j]]);
+            ctx.drawImage(image, j*50, i*50, 50, 50);
         }
         else{
             if(tile.length !== 10){
