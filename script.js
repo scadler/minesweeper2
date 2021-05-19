@@ -8,7 +8,7 @@ var tile = [];
     [ [1] [3] [X] ]
     [ [1] [X] [X] ]
     tile[0][2] = 1, tile[1][1] = 3
-     _ = null, X = mine, nums 0-8 = 0-8, f = flagged mine, n = flagged number
+     _ = null, X = mine, nums 0-8 = 0-8 mines in the neighboring cells
 */
 var revealedTileList = [];
 var checked = [];
@@ -46,9 +46,9 @@ function generateArray(avoidX,avoidY){
         }
     }
     console.log(revealedTileList)
-    generateBombs(avoidX,avoidY);
+    generateMines(avoidX,avoidY);
 };
-function generateBombs(avoidX,avoidY){
+function generateMines(avoidX,avoidY){
     var c = 0;
     var i = 0;
     var avoidNeighborX = [];
@@ -63,7 +63,7 @@ function generateBombs(avoidX,avoidY){
         var y = Math.floor(Math.random()*10);
         if(tile[x][y]!= "X" && (avoidNeighborX.includes(x) === false || avoidNeighborY.includes(y) === false)){
             /*this if statement ensures that mines are not placed where mines
-            already are or near where the player first clicked*/
+            already are or neighbor the tile where the player first clicked*/
             tile[x][y] = "X";
             i++;
         }
@@ -128,7 +128,6 @@ function tileClicked(row,col){
 $("#canvas").mousedown(function(e){
     if(e.which === 1) {
         tileClicked(e.pageX-15,e.pageY-15);
-        // console.log($(this).attr("id"));
     }
     if(e.which === 3) {
         e.preventDefault();
@@ -152,18 +151,23 @@ function placeFlag(row,col){
 function chainEmptyTileReveals(i,j){
     var ii = 0;
     while(ii < 8){
+        //find the neighbors of the current tile 
         x = neighborIndexMath[ii][0];
         y = neighborIndexMath[ii][1];
         if((i+x)>=0 && (j+y)>=0 && (i+x)<=9 && (j+y)<=9 && flagList.includes((i+x)+((j+y)*10)) === false){
+            //if the neighbor of the current tile exists and is not covered by a flag, reveal it
             let image = document.getElementById(`${imageList[tile[i+x][j+y]]}`);
             ctx.drawImage(image, (j+y)*50, (i+x)*50, 50, 50);
             revealedTileList[i+x][j+y] = "X";
             if(tile[i+x][j+y] === "0"){
+                //if the tile is blank, then:
                 if(unchecked.includes((i+x)+((j+y)*10)) === false && checked.includes((i+x)+((j+y)*10)) === false){
+                    //if the current tile is unchecked, add it to the list of blank tiles if not already on the list
                     console.log((i+x)+((j+y)*10))
                     unchecked.push((i+x)+((j+y)*10));
                 }
                 else if(checked.includes((i+x)+((j+y)*10)) === false){
+                    //if the current tile is checked, add it to the list of checked tiles
                     checked.push((i+x)+((j+y)*10));
                 }
             }
@@ -171,11 +175,11 @@ function chainEmptyTileReveals(i,j){
         ii++
     }
     if(unchecked.length > 0){
+        //if there are any unchecked blank tiles, check the first unchecked tile on the list
         setTimeout(() => {
             chainEmptyTileReveals(unchecked[0]%10,Math.floor(unchecked[0]/10));
             checked.push(unchecked[0]);
             unchecked.shift();
         },)
     }
-    console.log(revealedTileList)
 }
