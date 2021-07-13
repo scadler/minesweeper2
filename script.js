@@ -122,6 +122,10 @@ function tileClicked(row,col){
             if(tile[i][j] === "0"){
                 chainEmptyTileReveals(i,j);
             }
+            else{
+                var n=math.floor(math.random()*3+1)
+                $('#tile-clicked').html(`<audio autoplay><source src="sounds/tile-clicked-ver${n}.mp3"></audio>`);
+            }
             }
         }
     }
