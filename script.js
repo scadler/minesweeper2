@@ -96,6 +96,7 @@ function tileClicked(row,col){
     var j = Math.floor(row/50);
     if(i>=0 && j>=0 && i<=9 && j<=9){
         if(flagList.includes(i+(j*10))){
+            $('#flag-removed').html(`<audio autoplay><source src="sounds/flag-removed.wav"></audio>`);
             //tile clicked was a flag
             flagList.splice(flagList.indexOf(i+(j*10)),1)
             var x = j*50;
@@ -120,10 +121,22 @@ function tileClicked(row,col){
             ctx.drawImage(image, j*50, i*50, 50, 50);
             revealedTileList[i][j] = "X"
             if(tile[i][j] === "0"){
+                //tile clicked was empty, reveal surronding tiles
+                $('#tile-chain').html(`<audio autoplay><source src="sounds/tile-chain.mp3"></audio>`);
                 chainEmptyTileReveals(i,j);
             }
+            else if(tile[i][j] === "X"){
+                //tile clicked was a mine, end game
+                $('#mine-clicked').html(`<audio autoplay><source src="sounds/mine-clicked.wav"></audio>`);
+                /* 
+                
+                    write endgame code here
+                
+                */
+            }
             else{
-                var n=math.floor(math.random()*3+1)
+                //tile clicked was a number
+                var n= Math.floor(Math.random()*3+1)
                 $('#tile-clicked').html(`<audio autoplay><source src="sounds/tile-clicked-ver${n}.mp3"></audio>`);
             }
             }
@@ -147,6 +160,7 @@ function placeFlag(row,col){
     let image = document.getElementById("flag");
     if(flagList.includes(i+(j*10)) === false && revealedTileList[i][j] !== "X"){
         //flag has not been placed on this tile and it is unrevealed
+        $('#flag-placed').html(`<audio autoplay><source src="sounds/flag-placed.wav"></audio>`);
         flagList.push(i+(j*10))
         console.log(flagList)
         ctx.drawImage(image, (j)*50, (i)*50, 50, 50);
