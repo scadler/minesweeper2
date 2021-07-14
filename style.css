@@ -10,3 +10,46 @@ html{
     border-right: 5px solid #FBFAF9;
     z-index: -100;
 }
+.button{
+    color:#333;
+    font-size:15px;
+    background-color: #BDBDBD;
+    height:45px;
+    width:145px;
+    border-bottom: 5px solid #949494;
+    border-right: 5px solid #949494;
+    border-top: 5px solid #FBFAF9;
+    border-left: 5px solid #FBFAF9;
+    z-index: 100;
+    border-radius: 0%;
+}
+#overlay {
+    position: fixed; /* Sit on top of the page content */
+    display: none; /* Hidden by default */
+    width: 500px; /* Full width (cover the whole page) */
+    height: 500px; /* Full height (cover the whole page) */
+    top: 13px;
+    left: 13px;
+    background-color: rgba(0,0,0,0.3); /* Black background with opacity */
+    z-index: 10; /* Specify a stack order in case you're using a different order for other elements */
+    cursor: pointer; /* Add a pointer on hover */
+}
+  #reset{
+    opacity: 80%;
+    position: absolute;
+    left: calc(250px - 72px);
+    top: calc(250px - 22px);
+  }
+ /* #reset:hover{
+    opacity: 100%;
+    transition: opacity 0.3s ease-in-out;
+}
+#reset:hover::after {
+    opacity: 80%;
+    transition: opacity 0.3s ease-in-out;
+} */
+
+.active, #reset:hover {
+    opacity: 100%;
+    transition-duration: 0.3s;
+}

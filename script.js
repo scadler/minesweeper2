@@ -24,6 +24,23 @@ var imageList = ["zero", "one", "two", "three", "four", "five", "six", "seven", 
 var neighborIndexMath = [[-1,-1], [0,-1], [1,-1], [-1,0], [1,0], [-1,1], [0,1], [1,1]];
 var rows = 10;
 var cols = 10;
+$("#reset").click(function(){
+    console.log('test');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawBoard();
+    //resetting all non-static arrays so that a new game can be created
+    tile.length = 0;
+    revealedTileList.length = 0;
+    checked.length = 0;
+    unchecked.length = 0;
+    flagList.length = 0;
+    mineList.length = 0;
+    $("#overlay").hide();
+    // document.getElementById("overlay").style.display = "block"
+});
+function displayOverlay(){
+    $("#overlay").fadeIn();
+}
 function drawBoard(){
     for ( var i = 0; i<rows; i++){
         for ( var j = 0; j<cols; j++){
@@ -160,6 +177,7 @@ function tileClicked(row,col){
             else if(tile[i][j] === "X"){
                 //tile clicked was a mine, end game
                 $('#mine-clicked').html(`<audio autoplay><source src="sounds/mine-clicked.wav"></audio>`);
+                setTimeout(function(){ displayOverlay(); },500);
                 /* 
                 
                     write endgame code here
