@@ -10,10 +10,16 @@ var tile = [];
     tile[0][2] = 1, tile[1][1] = 3
      _ = null, X = mine, nums 0-8 = 0-8 mines in the neighboring cells
 */
+var status = {
+    over: false,
+    flaggedMines: 0,
+}
+console.log(status)
 var revealedTileList = [];
 var checked = [];
 var unchecked = [];
 var flagList = [];
+var mineList = [];
 var imageList = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight"]  
 var neighborIndexMath = [[-1,-1], [0,-1], [1,-1], [-1,0], [1,0], [-1,1], [0,1], [1,1]];
 var rows = 10;
@@ -65,9 +71,11 @@ function generateMines(avoidX,avoidY){
             /*this if statement ensures that mines are not placed where mines
             already are or neighbor the tile where the player first clicked*/
             tile[x][y] = "X";
+            mineList.push(x+(y*10))
             i++;
         }
     }
+    console.log(mineList)
     generateTiles()
 }
 function generateTiles(){
@@ -91,6 +99,29 @@ function generateTiles(){
     }
     console.log(tile);
 }
+function updateFlaggedMinesCounter(i,j,change){
+    if(change === "placed" && tile[i][j] === "X"){
+        status.flaggedMines += 1;
+        console.log(status.flaggedMines)
+    }
+    else if(change === "removed" && tile[i][j] === "X"){
+        status.flaggedMines -= 1;
+        console.log(status.flaggedMines)
+    }
+    if(status.flaggedMines > 15 || status.flaggedMines < 0){
+        if(status.flaggedMines > 15){
+            console.log("game won");
+            /*
+            
+                write game won code here
+            
+            */
+        }
+        else{
+            status.flaggedMines = 0;
+        }
+    }
+}
 function tileClicked(row,col){
     var i = Math.floor(col/50);
     var j = Math.floor(row/50);
@@ -111,6 +142,7 @@ function tileClicked(row,col){
             ctx.fillStyle = "#BDBDBD";
             ctx.fillRect(x+5,y+5,40,40);
             //redraws a blank tile over the previously drawn image of flag
+            updateFlaggedMinesCounter(i,j,"removed")
         }
         else{
             if(tile.length !== 10){
@@ -164,6 +196,7 @@ function placeFlag(row,col){
         flagList.push(i+(j*10))
         console.log(flagList)
         ctx.drawImage(image, (j)*50, (i)*50, 50, 50);
+        updateFlaggedMinesCounter(i,j,"placed")
     }
 }
 function chainEmptyTileReveals(i,j){
